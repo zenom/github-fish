@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# dot
+#
+# `dot` handles installation, updates, things like that. Run it periodically
+# to make sure you're on the latest and greatest.
+export FISH=$HOME/.dotfiles
+
+if [ "$(uname)" == "Darwin" ]; then
+  # Set macOS defaults
+  $FISH/macos/set-defaults.sh
+fi
+
+# Install homebrew
+$FISH/homebrew/install.sh 2>&1
+
+# Upgrade homebrew
+echo "› brew update"
+brew update
+
+
+# Install software
+echo "› $FISH/script/install"
+$FISH/script/install
