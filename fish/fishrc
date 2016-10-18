@@ -1,41 +1,63 @@
 # shortcut to this dotfiles path is $FISH
-export FISH=$HOME/.dotfiles
+#export FISH $HOME/.dotfiles
+set -g -x FISH $HOME/.dotfiles
 
 # Stash your environment variables in ~/.localrc. This means they'll stay out
 # of your main dotfiles repository (which may be public, like this one), but
 # you'll have access to them in your scripts.
-if [[ -a ~/.localrc ]]
-then
-  source ~/.localrc
-fi
+if test -e ~/.localrc
+  . ~/.localrc
+end
 
 # all of our fish files
-typeset -U config_files
-config_files=($FISH/**/*.fish)
+#typeset -U config_files
+#config_files=($FISH/**/*.fish)
+
+function fish_config_files
+  find $FISH -name '*.fish'
+end
 
 # load the path files
-for file in ${(M)config_files:#*/path.fish}
-do
-  source $file
-done
+for file in (fish_config_files)
+  . $file
+end
 
-# load everything but the path and completion files
-for file in ${${config_files:#*/path.fish}:#*/completion.fish}
-do
-  source $file
-done
 
-# initialize autocomplete here, otherwise functions won't be loaded
-autoload -U compinit
-compinit
+#eval $(dircolors -b $HOME/.dircolors)
 
-# load every completion after autocomplete loads
-for file in ${(M)config_files:#*/completion.fish}
-do
-  source $file
-done
+set normal (set_color normal)
+set magenta (set_color magenta)
+set yellow (set_color yellow)
+set green (set_color green)
+set red (set_color red)
+set gray (set_color -o black)
 
-export TERM=xterm-256color
+# Fish git prompt
+set __fish_git_prompt_showdirtystate 'yes'
+set __fish_git_prompt_showstashstate 'yes'
+set __fish_git_prompt_showuntrackedfiles 'yes'
+set __fish_git_prompt_showupstream 'yes'
+set __fish_git_prompt_color_branch yellow
+set __fish_git_prompt_color_upstream_ahead green
+set __fish_git_prompt_color_upstream_behind red
 
-unset config_files
-eval $(dircolors -b $HOME/.dircolors)
+# Status Chars
+set __fish_git_prompt_char_dirtystate '⚡'
+set __fish_git_prompt_char_stagedstate '→'
+set __fish_git_prompt_char_untrackedfiles '☡'
+set __fish_git_prompt_char_stashstate '↩'
+set __fish_git_prompt_char_upstream_ahead '+'
+set __fish_git_prompt_char_upstream_behind '-'
+
+
+function fish_prompt
+  set last_status $status
+
+  set_color $fish_color_cwd
+  printf '%s' (prompt_pwd)
+  set_color normal
+
+  printf '%s ' (__fish_git_prompt)
+
+  set_color normal
+end
