@@ -152,5 +152,12 @@ then
   fi
 fi
 
+echo 'Updating /etc/shells'
+echo `which fish` | sudo tee -a /etc/shells
+rm -rf "$HOME/.config/fish/config.fish"
+link_file "$HOME/.dotfiles/fish/fishrc" "$HOME/.config/fish/config.fish"
+echo 'Changing shell to fish....'
+chsh -s `which fish`
+
 echo ''
 echo '  All installed!'
